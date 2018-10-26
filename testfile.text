@@ -1,0 +1,96 @@
+server
+
+
+  SaveFile (base64, filename) {
+    return new Promise(function (resolve, reject) {
+      let base64String = /,(.+)/.exec(base64)[1]
+      require('fs').writeFile(config.assets.imagePathOfSave + filename, base64String, 'base64', function (err) {
+        reject(err)
+      })
+      resolve('ok')
+    })
+  },
+  GUID: function() {
+      function s4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  },
+  
+  
+var ss = require('socket.io-stream')
+var fs = require('fs')
+var path = require('path')
+
+        ss(socket).on('UPLOADFILETEST',async function (stream, data) {
+          try {
+            var dayName = new Date().toISOString().slice(0,10)
+            var dir = `./controllers/linebotfriendandfamily/fileupload/${dayName}`
+            if (!fs.existsSync(dir)){
+                await fs.mkdirSync(dir)
+            }
+
+            var filename = path.basename(data.name)
+            stream.pipe(fs.createWriteStream(`${dir}/${filename}`))
+            // stream.pipe(fs.createWriteStream(filename))
+          } catch (error) {
+            console.log(error)
+          }
+        })
+        
+        
+        
+        
+        
+        
+        *********************************
+        
+        <input id="file" @change="aa()" ref="myFiles2" type="file" />
+        
+        
+import io from 'socket.io-client'
+var ss = require('socket.io-stream')
+const sp = require('socket.io-pull-stream')
+const pull = require('pull-stream')
+
+            socket : io('https://79e430a9.ngrok.io/linebot-support?token=secretrecipe',{ autoConnect: true }),
+            stream: ss.createStream()
+        
+        aa(){
+            // console.error('Too big highWaterMark.');
+            let _files = this.$refs.myFiles2.files
+            
+            var file = _files[0];
+            var stream = ss.createStream()
+
+            var blobStream = ss.createBlobReadStream(file);
+            var size = 0;
+            blobStream.on('data', function(chunk) {
+            size += chunk.length;
+                console.log(Math.floor(size / file.size * 100) + '%');
+                // -> e.g. '42%'
+            });
+            
+            // blobStream.pipe(stream);
+
+            // upload a file to the server.
+            ss(this.socket).emit('UPLOADFILETEST', stream, {size: file.size, name: file.name});
+            blobStream.pipe(stream);
+        },
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
